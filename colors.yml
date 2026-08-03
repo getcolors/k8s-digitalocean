@@ -1,0 +1,85 @@
+# Desired state for the kubeadm Kubernetes deployment. This file contains only
+# non-secret values. Credentials belong in the gitignored .envrc.private as
+# COLORS_PAR_* environment variables.
+#
+# Required credentials:
+#   DigitalOcean  COLORS_PAR_DO_TOKEN
+#   Cloudflare    COLORS_PAR_CLOUDFLARE_API_TOKEN
+#   GitHub        COLORS_PAR_GITHUB_TOKEN
+#   R2 backend    COLORS_PAR_R2_ACCESS_KEY_ID
+#                 COLORS_PAR_R2_SECRET_ACCESS_KEY
+#
+# Never export COLORS_PAR_PROFILE. An overlay could redirect this deployment to
+# another project's remote state; the launcher must reject it.
+
+profile: k8s-digitalocean
+workdir: .colors
+
+provider-compute: digitalocean
+provider-dns: cloudflare
+provider-backend: r2
+
+# Preserve this guard in committed desired state. It may only be overridden for
+# an explicitly authorized deletion of resources owned by this deployment.
+compute-prevent-destroy: true
+
+# --- Kubernetes -------------------------------------------------------------
+
+kubernetes-distribution: kubeadm
+kubernetes-version: v1.36.3
+kubernetes-cni: flannel
+flannel-version: v0.28.8
+kubernetes-pod-cidr: 10.244.0.0/16
+kubernetes-service-cidr: 10.96.0.0/12
+
+control-plane-count: 1
+worker-count: 1
+
+# Flux watches the public GitOps repository. Manifests for this deployment live
+# below a cluster-specific path so the repository can grow without ambiguity.
+flux-version: v2.9.3
+digitalocean-cloud-controller-version: v0.1.68
+repository: https://github.com/getcolors/k8s-helloworld.git
+repository-branch: main
+repository-path: ./clusters/k8s-digitalocean
+
+# --- DigitalOcean -----------------------------------------------------------
+
+digitalocean-name: k8s-digitalocean
+digitalocean-region: ams3
+digitalocean-control-plane-size: s-2vcpu-4gb
+digitalocean-worker-size: s-2vcpu-4gb
+digitalocean-image: ubuntu-24-04-x64
+
+# Existing account-side key. This is an identifier, not private key material.
+digitalocean-ssh-key-fingerprint: "c8:24:b0:7f:94:28:37:5a:23:d6:02:8b:b0:00:d7:7a"
+
+# A deployment-owned VPC keeps node traffic private and can be removed safely
+# with the cluster because it is not shared with other projects.
+digitalocean-vpc-cidr: 10.20.0.0/20
+
+# Restrict administrative access to the public IPv4 of the machine from which
+# this desired state was scaffolded. Update these non-secret CIDRs if the
+# operator address changes.
+digitalocean-ssh-sources:
+  - 130.61.79.89/32
+digitalocean-api-sources:
+  - 130.61.79.89/32
+
+# The cloud controller enables a Kubernetes Service of type LoadBalancer. The
+# GitOps repository owns ingress-nginx and the Service declaration.
+digitalocean-cloud-controller: true
+
+# --- Public application, DNS, and TLS ---------------------------------------
+
+application-host: hello.bigconfig.online
+cloudflare-zone: bigconfig.online
+external-dns-owner-id: k8s-digitalocean
+cert-manager-acme-environment: production
+
+# --- Cloudflare R2 state backend -------------------------------------------
+
+# State remains isolated by <profile>/<stage>.tfstate even though the bucket is
+# shared with other workspace deployments.
+r2-bucket: tofu-state-319271fed8bc6d2d9059362be1165f37-eu
+r2-endpoint: https://319271fed8bc6d2d9059362be1165f37.eu.r2.cloudflarestorage.com
