@@ -5,7 +5,7 @@
       "source": "getcolors/k8s",
       "sourceType": "github",
       "skillPath": "skills/package-k8s-green/SKILL.md",
-      "computedHash": "2e6885c6ec82c2b35e77b2fdc1cfa41122d6f724317da581d7c03b1b054eaa7a"
+      "computedHash": "edf055b15f3125ec32733964c5e728c11c3c9581bfce22a8920df11c72da633d"
     }
   }
 }
