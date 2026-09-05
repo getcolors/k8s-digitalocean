@@ -52,7 +52,11 @@ digitalocean-worker-size: s-2vcpu-4gb
 digitalocean-image: ubuntu-24-04-x64
 
 # Existing account-side key. This is an identifier, not private key material.
-digitalocean-ssh-key-fingerprint: "c8:24:b0:7f:94:28:37:5a:23:d6:02:8b:b0:00:d7:7a"
+# No digitalocean-ssh-keys: keygen mode per workspace standards/ssh-keypair.md.
+# The first real create generates ~/.ssh/<profile> and registers it under the
+# profile's name; delete removes it last. Supplying digitalocean-ssh-keys (an id
+# or fingerprint; the value this deployment used to carry as
+# digitalocean-ssh-key-fingerprint) would switch it to opt-out mode.
 
 # A deployment-owned VPC keeps node traffic private and can be removed safely
 # with the cluster because it is not shared with other projects.
@@ -62,9 +66,9 @@ digitalocean-vpc-cidr: 10.20.0.0/20
 # this desired state was scaffolded. Update these non-secret CIDRs if the
 # operator address changes.
 digitalocean-ssh-sources:
-  - 130.61.79.89/32
+  - 89.168.97.254/32
 digitalocean-api-sources:
-  - 130.61.79.89/32
+  - 89.168.97.254/32
 
 # The cloud controller enables a Kubernetes Service of type LoadBalancer. The
 # GitOps repository owns ingress-nginx and the Service declaration.
