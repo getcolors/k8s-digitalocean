@@ -68,3 +68,20 @@ nodes, retain the remote OpenTofu state and rerun `create`. If Kubernetes is too
 damaged to remove its LoadBalancer, do not destroy the VPC first: restore API
 access or remove only the deployment-owned LoadBalancer explicitly, then rerun
 the guarded delete.
+
+## Compute dependency
+
+colors-compute supplies the control-plane and worker machines, shared network,
+firewalls, SSH keys, and remote R2 or S3 state. The package requests Kubernetes
+controller support from the library and includes the returned tasks. A
+compatible provider addition requires only a dependency update in this package.
+Provider settings and capability validation belong to the library.
+
+The default uses DigitalOcean with a deployment-owned VPC. Supply the selected
+provider's settings and operator source CIDRs in `colors.yml`. Ansible uses the
+returned node addresses and users. Generated keys live at `~/.ssh/<profile>`.
+External SSH access requires an explicit `ssh-private-key-path` for Ansible.
+The local SSH config leaves identity selection to the operator in external mode.
+
+The previous combined infrastructure state requires explicit migration.
+Updating the launcher does not transfer state or recreate the existing cluster.
