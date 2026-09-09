@@ -68,3 +68,11 @@ The local SSH config leaves identity selection to the operator in external mode.
 
 The previous combined infrastructure state requires explicit migration.
 Updating the launcher does not transfer state or recreate the existing cluster.
+
+### Repeated deletion after compute retirement
+
+A repeated `delete` with validated retired compute ownership resumes only the
+local generated-file cleanup. It does not require removed SSH keys or contact
+the former hosts, DNS, registry, or other application cloud resources. Failed
+ownership inspection still stops deletion. Local cleanup preserves unrelated
+files and is safe to repeat.

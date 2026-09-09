@@ -1,6 +1,6 @@
 # Shared compute rollout
 
-Installed package: `getcolors/k8s` at published revision `892f87d9316c4ff1305b6e0d398c86f1d16630d4`.
+Installed package: `getcolors/k8s` at published revision `28ed094e281fd85af061f8b4609656ca3818337d`.
 The installed skill directories and root launchers were copied from a verified
 Skills CLI installation of that revision. The existing skills-lock.json entries were updated from that installation.
 
@@ -24,3 +24,8 @@ Generated compute documents were present. Any rendered backend documents used
 compute state keys and contained no credentials.
 This proves offline rendering, not live credentials, migrated ownership, or
 application health.
+
+Repeated deletion after validated compute retirement resumes only local cleanup,
+without SSH keys or remote application stages. Failed ownership inspection
+still blocks deletion. The refreshed published launcher passed an additional
+offline build of this unchanged configuration in a temporary directory.
